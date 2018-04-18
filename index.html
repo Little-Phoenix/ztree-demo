@@ -169,7 +169,7 @@
               $("<a>").attr('href', 'javascript:void(0)')
                       .addClass('-copy-btn')
                       .attr('data-clipboard-action', 'copy')
-                      .attr('data-clipboard-text', treeNode.name)
+                      .attr('data-clipboard-target', "#" + treeNode.tId + '_span')
                       .bind('click', function(eventParam){
                         copy();
                       }))
@@ -206,7 +206,7 @@
     }
 
     var zNodes =[
-    {id:0, pId:000,name:"【客服手册】", open:true, copy_btn: true},
+    {id:0, pId:000,name:"【客服手册】", open:true},
     {id:1, pId:0, name:"公有云专业版", open:false, img_url: './img/10.jpg', img_width: '200px'},
     {id:2, pId:0, name:"聊天室", open:false},
     {id:3, pId:0, name:"单、群聊", open:false, img_url: './img/image.png'},
@@ -223,7 +223,7 @@
                     {id:11213, pId:1121, name:"收图片消息问题"},
       {id:1122, pId:112, name:"收不到问题",open:true},
                     {id:11221, pId:1122, name:"首先排查" ,open:true},
-                 {id:112211, pId:11221, icon:'none',  name:"1、设置后2小时生效。</br>2、调用Server API 接口发送的消息，不会路由。</br>3、默认消息中包含屏蔽敏感词时，用户不会收到该条消息，也不会同步到应用服务器，如果含有替换敏感词时，</br>会将消息中的敏感词替换成指定的内容进行发送，同时同步到应用服务器。</br>如需要将含有屏蔽敏感词的消息也路由到应用服务器，可提交工单申请开通。" ,showIcon:false},
+                 {id:112211, pId:11221, icon:'none', copy_btn: true,  name:"1、设置后2小时生效。</br>2、调用Server API 接口发送的消息，不会路由。</br>3、默认消息中包含屏蔽敏感词时，用户不会收到该条消息，也不会同步到应用服务器，如果含有替换敏感词时，</br>会将消息中的敏感词替换成指定的内容进行发送，同时同步到应用服务器。</br>如需要将含有屏蔽敏感词的消息也路由到应用服务器，可提交工单申请开通。" ,showIcon:false},
 
                     {id:11222, pId:1122, name:"日志查询"},
       {id:12, pId:1, name:"广播消息和推送"}
