@@ -90,6 +90,14 @@
       border: 0;
     }
 
+    .ztree li a.-img-shower {
+      width: 26px;
+      height: 26px;
+      background: url('./img/image.png') center no-repeat;
+      border: 0;
+      background-size: contain;
+    }
+
   </style>
   </head>
   <body>
@@ -166,10 +174,22 @@
                         copy();
                       }))
           }
+
+          if(treeNode.img_url) {
+            $("#" + treeNode.tId + '_a').after(
+              $("<a>").attr('href', 'javascript:void(0)')
+                      .addClass('-img-shower')
+                      .bind('click', function(eventParam){
+                        showImg(treeNode);
+                      }))
+          }
         }
       }
     };
 
+    /**
+     * 复制
+     */
     function copy() {
       var clipboard = new Clipboard('.-copy-btn');
       clipboard.on('success', function(e) {
@@ -177,11 +197,19 @@
       });
     }
 
+    function showImg(treeNode) {
+      var opt = {
+        src: treeNode.img_url,
+        width: treeNode.img_width
+      }
+      winpop(opt);
+    }
+
     var zNodes =[
     {id:0, pId:000,name:"【客服手册】", open:true, copy_btn: true},
-    {id:1, pId:0, name:"公有云专业版", open:false},
+    {id:1, pId:0, name:"公有云专业版", open:false, img_url: './img/10.jpg', img_width: '200px'},
     {id:2, pId:0, name:"聊天室", open:false},
-    {id:3, pId:0, name:"单、群聊", open:false},
+    {id:3, pId:0, name:"单、群聊", open:false, img_url: './img/image.png'},
     {id:4, pId:0, name:"敏感词、云净网", open:false},
     {id:5, pId:0, name:"智齿、小能、佳信客服", open:false},
     {id:6, pId:0, name:"push", open:false},
@@ -206,7 +234,8 @@
       t = $.fn.zTree.init(t, setting, zNodes);
       demoIframe = $("#testIframe");
       // demoIframe.bind("load", loadReady);
-      // winpop();
+
+
     });
 
     </script>

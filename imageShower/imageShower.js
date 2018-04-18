@@ -1,35 +1,28 @@
-function ImageShower() {
-  var $imageShower = $("<div>").addClass('img-bg');
-  var $img = $("<img>").addClass('img');
-
-
-  this.init = function(src, width) {
-    $img.attr('src', src)
-        .attr('style', 'width:' + width + 'px');
-  }
-
-  $imageShower.append($img)
-
-  return $imageShower;
-}
-
-
 (function($){
   var htmls = {
     'imgbg' : '<div class="img-bg"></div>',
-    'img': '<img/>'
+    'img': '<img class="img"/>'
   }
 
   var winpop = function(opt, callback) {
     var defaults = {
-
+      width: '500px'
     }
 
     this.options = $.extend({}, defaults, opt);
     this.$body = $("body");
 
-    this.$imgbg = $(htmls.imgbg);
-
+    this.$imgbg = $(".img-bg").length ? $(".img-bg").removeClass('div-hide') : $(htmls.imgbg);
+    this.$img = $(".img").length ? $(".img") : $(htmls.img);
+    this.$img.attr('src', this.options.src)
+             .attr('style', "width: " + this.options.width);
+    var that = this;
+    this.$imgbg.append(this.$img)
+               .bind('click', function(event){
+                 if(event.target.nodeName !== 'IMG') {
+                   that.$imgbg.addClass('div-hide')
+                 }
+               });
     this.$body.append(this.$imgbg);
 
     if(callback != 'undefined') {
@@ -44,12 +37,8 @@ function ImageShower() {
 
 
   winpop.prototype = {
-    createdom: function (ele) {
-
-    },
-
     colseclick: function() {
-
+      console.log('colse');
     }
 
   }
