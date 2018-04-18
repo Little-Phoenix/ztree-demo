@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>ztree-demo</title>
+    <link rel="stylesheet" href="./metroStyle/metroStyle.css">
+    <link rel="stylesheet" href="./imageShower/imageShower.css">
+    <style media="screen">
+      .ztree li {
+        position: relative;
+        margin-top: 10px;
+      }
+
+      .ztree li a {
+        border: 1px solid #333;
+        border-radius: 5px;
+      }
+
+      .ztree li.level0 span.level0 {
+        width: 0
+      }
+
+      .ztree li.level0::before {
+        display: none;
+      }
+
+      .ztree li ul.line {
+        background: url(./metroStyle/img/line_conn.png) 81px 0 repeat-y;
+      }
+
+      .ztree li ul {
+        padding: 0 0 0 81px;
+      }
+
+      .ztree * {
+        font-size: 14px;
+      }
+
+
+      .ztree li ul {
+        padding: 10px 0 0 81px;
+      }
+
+      .ztree li ul li:first-child {
+        margin-top: 0;
+      }
+
+      .ztree li span.button.bottom_docu {
+        background-position: -84px -32px;
+      }
+
+      .ztree li span.button.bottom_open {
+        background-position: -105px -32px;
+      }
+
+      .ztree li span.button.center_open {
+        background-position: -105px -32px;
+      }
+
+      .ztree li span.button.center_docu {
+        background-position: -84px -32px;
+      }
+
+      .ztree li span.button.center_close {
+        background-position: -126px -32px
+      }
+
+      .ztree li span.button.switch {
+        height: 30px;
+        margin-top: -10px;
+      }
+
+      a.-self-link {
+        width: 28px;
+        background: url('./img/11.png') no-repeat;
+        background-size: contain;
+        border: 0px!important;
+        background-position: right bottom;
+      }
+
+    </style>
+  </head>
+  <body>
+    <ul id="tree" class="ztree"></ul>
+
+    <script src="./js/jquery-1.4.4.min.js" charset="utf-8"></script>
+    <script src="./js/jquery.ztree.all.min.js" charset="utf-8"></script>
+    <script src="./imageShower/imageShower.js" charset="utf-8"></script>
+
+    <script type="text/javascript">
+    var zTree;
+var demoIframe;
+
+var setting = {
+  view: {
+    dblClickExpand: false,
+    showLine: true,
+    selectedMulti: false,
+    showIcon: true
+  },
+  data: {
+    simpleData: {
+      enable:true,
+      idKey: "id",
+      pIdKey: "pId",
+      rootPId: ""
+    }
+  },
+  callback: {
+    beforeClick: function(treeId, treeNode) {
+      var zTree = $.fn.zTree.getZTreeObj("tree");
+      if (treeNode.isParent) {
+        zTree.expandNode(treeNode, 'none', false, true, true);
+        return true;
+      } else {
+        demoIframe.attr("src",treeNode.file + ".html");
+        return false;
+      }
+    },
+    onExpand: function(event, treeId, treeNode) {
+      if(treeNode.children.length === 1) {
+        $("#" + treeNode.tId + "_ul").removeClass('line')
+      } else if(treeNode.children.length > 1){
+        $("#" + treeNode.tId + "_ul").addClass('line')
+      }
+    },
+    onNodeCreated: function(event, treeId, treeNode) {
+      if(treeNode.click_url) {
+        $("#" + treeNode.tId + '_a').after($("<a>").attr('href', treeNode.click_url).attr('target', '_blank').addClass('-self-link'))
+      }
+      if(treeNode.open && treeNode.children.length === 1) {
+        $("#" + treeNode.tId + "_ul").removeClass('line')
+      } else if (treeNode.open && treeNode.children.length > 1) {
+        $("#" + treeNode.tId + "_ul").addClass('line')
+      }
+    }
+  }
+};
+
+var zNodes =[
+  {id:1, pId:0, name:"公有云专业版", open:false,icon: 'none'},
+  {id:110, pId:1, name:"消息路由", file:"core/standardData", open: true},
+  {id:102, pId:1, name:"在线状态订阅", file:"core/simpleData"},
+  {id:111, pId:110, name:"服务说明", file:"core/noicon", url:"http://www.rongcloud.cn/docs/server.html#message_sync"},
+  {id:112, pId:110, name:"测试工具", file:"core/noicon", open: true },
+  {id:113, pId:110, name:"常见问题", file:"core/custom_icon"},
+  {id:120, pId:1, name:"广播消息和推送", file:"core/simpleData"},
+];
+
+$(document).ready(function(){
+  var t = $("#tree");
+  t = $.fn.zTree.init(t, setting, zNodes);
+  demoIframe = $("#testIframe");
+  // demoIframe.bind("load", loadReady);
+
+  var imageShower = new ImageShower();
+  imageShower.init('./image/10.jpg', 226);
+  $('body').append(imageShower);
+});
+
+    </script>
+  </body>
+</html>
