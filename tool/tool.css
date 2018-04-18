@@ -1,0 +1,27 @@
+
+.toast{
+  position: fixed;
+	z-index: 5;
+	top: 50%;
+	left: 50%;
+	height: 50px;
+	max-heihgt: 80px;
+	width: 240px;
+	margin-left: -120px;
+	margin-top: -25px;
+	line-height: 20px;
+	display: table;
+	padding: 0 10px;
+	text-align: center;
+	border-radius: 6px;
+	opacity: 1;
+	transition: opacity 0.3s ease;
+	-webkit-transition: opacity 0.3s ease;
+	color: #fff;
+	background-color: rgba(51, 51, 51, 0.8);
+}
+
+.toast .inner {
+  display: table-cell;
+  vertical-align: middle;
+}

@@ -5,158 +5,209 @@
     <title>ztree-demo</title>
     <link rel="stylesheet" href="./metroStyle/metroStyle.css">
     <link rel="stylesheet" href="./imageShower/imageShower.css">
+    <link rel="stylesheet" href="./tool/tool.css">
     <style media="screen">
-      .ztree li {
-        position: relative;
-        margin-top: 10px;
-      }
+        .ztree li {
+            position: relative;
+            margin-top: 10px;
+        }
 
-      .ztree li a {
+    .ztree li a {
         border: 1px solid #333;
         border-radius: 5px;
-      }
+        height: auto;
+        line-height: 21px;
+    }
 
-      .ztree li.level0 span.level0 {
+    .ztree li.level0 span.level0 {
         width: 0
-      }
+    }
 
-      .ztree li.level0::before {
+    .ztree li.level0::before {
         display: none;
-      }
+    }
 
-      .ztree li ul.line {
+    .ztree li ul.line {
         background: url(./metroStyle/img/line_conn.png) 81px 0 repeat-y;
-      }
+    }
 
-      .ztree li ul {
+    .ztree li ul {
         padding: 0 0 0 81px;
-      }
+    }
 
-      .ztree * {
+    .ztree * {
         font-size: 14px;
-      }
+    }
 
 
-      .ztree li ul {
+    .ztree li ul {
         padding: 10px 0 0 81px;
-      }
+    }
 
-      .ztree li ul li:first-child {
+    .ztree li ul li:first-child {
         margin-top: 0;
-      }
+    }
 
-      .ztree li span.button.bottom_docu {
+    .ztree li span.button.bottom_docu {
         background-position: -84px -32px;
-      }
+    }
 
-      .ztree li span.button.bottom_open {
+    .ztree li span.button.bottom_open {
         background-position: -105px -32px;
-      }
+    }
 
-      .ztree li span.button.center_open {
+    .ztree li span.button.center_open {
         background-position: -105px -32px;
-      }
+    }
 
-      .ztree li span.button.center_docu {
+    .ztree li span.button.center_docu {
         background-position: -84px -32px;
-      }
+    }
 
-      .ztree li span.button.center_close {
+    .ztree li span.button.center_close {
         background-position: -126px -32px
-      }
+    }
 
-      .ztree li span.button.switch {
+    .ztree li span.button.switch {
         height: 30px;
         margin-top: -10px;
-      }
+    }
 
-      a.-self-link {
+    a.-self-link {
         width: 28px;
         background: url('./img/11.png') no-repeat;
         background-size: contain;
         border: 0px!important;
         background-position: right bottom;
-      }
+    }
 
-    </style>
+    .ztree li a.-copy-btn {
+      width: 26px;
+      height: 26px;
+      background: url('./img/copy12.png') no-repeat;
+      background-size: contain;
+      background-position: center;
+      border: 0;
+    }
+
+  </style>
   </head>
   <body>
     <ul id="tree" class="ztree"></ul>
 
     <script src="./js/jquery-1.4.4.min.js" charset="utf-8"></script>
-    <script src="./js/jquery.ztree.all.min.js" charset="utf-8"></script>
+    <script src="./js/jquery.ztree.all.js" charset="utf-8"></script>
     <script src="./imageShower/imageShower.js" charset="utf-8"></script>
+    <script src="./js/clipboard.min.js" charset="utf-8"></script>
+    <script src="./tool/tool.js" charset="utf-8"></script>
 
     <script type="text/javascript">
     var zTree;
-var demoIframe;
+    var demoIframe;
 
-var setting = {
-  view: {
-    dblClickExpand: false,
-    showLine: true,
-    selectedMulti: false,
-    showIcon: true
-  },
-  data: {
-    simpleData: {
-      enable:true,
-      idKey: "id",
-      pIdKey: "pId",
-      rootPId: ""
+    var setting = {
+      view: {
+        dblClickExpand: false,
+        showLine: true,
+        selectedMulti: false,
+        showIcon: true,
+        nameIsHTML:true,
+        txtSelectedEnable:true,
+        showTitle: false
+      },
+      data: {
+        simpleData: {
+          enable:true,
+          idKey: "id",
+          pIdKey: "pId",
+          rootPId: ""
+        }
+      },
+      callback: {
+        beforeClick: function(treeId, treeNode) {
+          var zTree = $.fn.zTree.getZTreeObj("tree");
+          if (treeNode.isParent) {
+            zTree.expandNode(treeNode, 'none', false, true, true);
+            return true;
+          } else {
+            demoIframe.attr("src",treeNode.file + ".html");
+            return false;
+          }
+        },
+        onExpand: function(event, treeId, treeNode) {
+          if(treeNode.children.length === 1) {
+            $("#" + treeNode.tId + "_ul").removeClass('line')
+          } else if(treeNode.children.length > 1){
+            $("#" + treeNode.tId + "_ul").addClass('line')
+          }
+        },
+        onNodeCreated: function(event, treeId, treeNode) {
+
+          if(!treeNode.url) {
+            $("#" + treeNode.tId + '_a').attr('style', 'text-decoration:none')
+          }
+
+          if(treeNode.click_url) {
+            $("#" + treeNode.tId + '_a').after($("<a>").attr('href', treeNode.click_url).attr('target', '_blank').addClass('-self-link'))
+          }
+          if(treeNode.open && treeNode.children.length === 1) {
+            $("#" + treeNode.tId + "_ul").removeClass('line')
+          } else if (treeNode.open && treeNode.children.length > 1) {
+            $("#" + treeNode.tId + "_ul").addClass('line')
+          }
+
+          if(treeNode.copy_btn) {
+            $("#" + treeNode.tId + '_a').after(
+              $("<a>").attr('href', 'javascript:void(0)')
+                      .addClass('-copy-btn')
+                      .attr('data-clipboard-action', 'copy')
+                      .attr('data-clipboard-text', treeNode.name)
+                      .bind('click', function(eventParam){
+                        copy();
+                      }))
+          }
+        }
+      }
+    };
+
+    function copy() {
+      var clipboard = new Clipboard('.-copy-btn');
+      clipboard.on('success', function(e) {
+        toast('复制成功！');
+      });
     }
-  },
-  callback: {
-    beforeClick: function(treeId, treeNode) {
-      var zTree = $.fn.zTree.getZTreeObj("tree");
-      if (treeNode.isParent) {
-        zTree.expandNode(treeNode, 'none', false, true, true);
-        return true;
-      } else {
-        demoIframe.attr("src",treeNode.file + ".html");
-        return false;
-      }
-    },
-    onExpand: function(event, treeId, treeNode) {
-      if(treeNode.children.length === 1) {
-        $("#" + treeNode.tId + "_ul").removeClass('line')
-      } else if(treeNode.children.length > 1){
-        $("#" + treeNode.tId + "_ul").addClass('line')
-      }
-    },
-    onNodeCreated: function(event, treeId, treeNode) {
-      if(treeNode.click_url) {
-        $("#" + treeNode.tId + '_a').after($("<a>").attr('href', treeNode.click_url).attr('target', '_blank').addClass('-self-link'))
-      }
-      if(treeNode.open && treeNode.children.length === 1) {
-        $("#" + treeNode.tId + "_ul").removeClass('line')
-      } else if (treeNode.open && treeNode.children.length > 1) {
-        $("#" + treeNode.tId + "_ul").addClass('line')
-      }
-    }
-  }
-};
 
-var zNodes =[
-  {id:1, pId:0, name:"公有云专业版", open:false,icon: 'none'},
-  {id:110, pId:1, name:"消息路由", file:"core/standardData", open: true},
-  {id:102, pId:1, name:"在线状态订阅", file:"core/simpleData"},
-  {id:111, pId:110, name:"服务说明", file:"core/noicon", url:"http://www.rongcloud.cn/docs/server.html#message_sync"},
-  {id:112, pId:110, name:"测试工具", file:"core/noicon", open: true },
-  {id:113, pId:110, name:"常见问题", file:"core/custom_icon"},
-  {id:120, pId:1, name:"广播消息和推送", file:"core/simpleData"},
-];
+    var zNodes =[
+    {id:0, pId:000,name:"【客服手册】", open:true, copy_btn: true},
+    {id:1, pId:0, name:"公有云专业版", open:false},
+    {id:2, pId:0, name:"聊天室", open:false},
+    {id:3, pId:0, name:"单、群聊", open:false},
+    {id:4, pId:0, name:"敏感词、云净网", open:false},
+    {id:5, pId:0, name:"智齿、小能、佳信客服", open:false},
+    {id:6, pId:0, name:"push", open:false},
+      {id:10, pId:1, name:"消息路由"},
+      {id:11, pId:1, name:"在线状态订阅"},
+      {id:111, pId:10, name:"服务说明", url:"http://www.rongcloud.cn/docs/server.html#message_sync"},
+      {id:112, pId:10, name:"常见问题" ,open:true},
+                 {id:1121, pId:112, name:"接收内容有问题" ,open:true},
+                    {id:11211, pId:1121, name:"收emoji问题"},
+                    {id:11212, pId:1121, name:"中文乱码问题"},
+                    {id:11213, pId:1121, name:"收图片消息问题"},
+      {id:1122, pId:112, name:"收不到问题",open:true},
+                    {id:11221, pId:1122, name:"首先排查" ,open:true},
+                 {id:112211, pId:11221, icon:'none',  name:"1、设置后2小时生效。</br>2、调用Server API 接口发送的消息，不会路由。</br>3、默认消息中包含屏蔽敏感词时，用户不会收到该条消息，也不会同步到应用服务器，如果含有替换敏感词时，</br>会将消息中的敏感词替换成指定的内容进行发送，同时同步到应用服务器。</br>如需要将含有屏蔽敏感词的消息也路由到应用服务器，可提交工单申请开通。" ,showIcon:false},
 
-$(document).ready(function(){
-  var t = $("#tree");
-  t = $.fn.zTree.init(t, setting, zNodes);
-  demoIframe = $("#testIframe");
-  // demoIframe.bind("load", loadReady);
+                    {id:11222, pId:1122, name:"日志查询"},
+      {id:12, pId:1, name:"广播消息和推送"}
+    ];
 
-  var imageShower = new ImageShower();
-  imageShower.init('./image/10.jpg', 226);
-  $('body').append(imageShower);
-});
+    $(document).ready(function(){
+      var t = $("#tree");
+      t = $.fn.zTree.init(t, setting, zNodes);
+      demoIframe = $("#testIframe");
+      // demoIframe.bind("load", loadReady);
+      // winpop();
+    });
 
     </script>
   </body>
